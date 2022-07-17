@@ -1,6 +1,7 @@
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.util.List;
 import java.util.Objects;
 
 public class FileManager {
@@ -15,17 +16,18 @@ public class FileManager {
 
     public void help() {
         String help = """
-                 ls - список файлов в директории
-                 ll - список файлов в директории с отображением занимаемой памяти
-                 pwd - просмотреть текущую директорию
-                 cp - копировать файл
-                 touch - создать файл
-                 cat - просмотреть содежимое файла
-                 cd - сменить директорию
-                 mkdir - создать директорию
-                 help - показывает это сообщение
-                 rm - удалить файл
-                 exit - выйти из программы""";
+                ls - список файлов в директории
+                ll - список файлов в директории с отображением занимаемой памяти
+                pwd - просмотреть текущую директорию
+                echo - вернуть значение в консоль
+                cp - копировать файл
+                touch - создать файл
+                cat - просмотреть содежимое файла
+                cd - сменить директорию
+                mkdir - создать директорию
+                help - показывает это сообщение
+                rm - удалить файл
+                exit - выйти из программы""";
         System.out.println(help);
     }
 
@@ -55,7 +57,7 @@ public class FileManager {
         File source = new File(currentFolder + File.separator + sourceFileName);
         File destination = new File(currentFolder + File.separator + destinationFileName);
         try {
-            if(!source.exists()) throw new IOException();
+            if (!source.exists()) throw new IOException();
             FileUtils.copyFile(source, destination);
         } catch (IOException e) {
             System.out.println("Файл не скопирован");
@@ -80,7 +82,7 @@ public class FileManager {
             this.currentFolder = this.currentFolder.substring(0, startLastFolderPosition);
             System.out.println(currentFolder);
         } else if (this.currentFolder.contains(directoryName)) {
-            String [] endFolderPosition = this.currentFolder.split(directoryName);
+            String[] endFolderPosition = this.currentFolder.split(directoryName);
             this.currentFolder = endFolderPosition[0] + directoryName;
             System.out.println(this.currentFolder);
         } else {
@@ -93,7 +95,7 @@ public class FileManager {
     public void fileContent(String fileName) {
         File file = new File(currentFolder + File.separator + fileName);
         try {
-            if(!file.exists()) throw new IOException();
+            if (!file.exists()) throw new IOException();
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line = reader.readLine();
             while (line != null) {
@@ -112,16 +114,16 @@ public class FileManager {
 
     public void removeFile(String removeFile) {
         File file = new File(currentFolder + File.separator + removeFile);
-        if(file.exists()){
+        if (file.exists()) {
             file.delete();
-        }else{
+        } else {
             System.out.println("Нет такого файла");
         }
     }
 
     public void removeDirectory(String removeDirectory) {
         File file = new File(currentFolder + File.separator + removeDirectory);
-        if(file.exists() && file.isDirectory()) {
+        if (file.exists() && file.isDirectory()) {
             recursiveDelete(file);
         } else {
             removeFile(removeDirectory);
@@ -142,5 +144,39 @@ public class FileManager {
 
     public void showLocalDirectory() {
         System.out.println("Вы сейчас находитесь в " + currentFolder);
+    }
+
+    public void echo(String[] tokens) {
+        for (int i = 1; i < tokens.length; i++) {
+            System.out.print(tokens[i] + " ");
+        }
+        System.out.println();
+    }
+
+
+    public void showHistory(int number) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/history.txt"))) {
+            if(number == 0) {
+                reader.lines().forEach(System.out::println);
+            } else if (number > 0){
+                List<String> history = reader.lines().toList();
+                if (number >= history.size()) {
+                    showHistory(0);
+                }
+                for (int i = history.size() - 1; i > history.size() - number - 1; i--) {
+                    System.out.println(history.get(i));
+                }
+            }
+        } catch (IOException exception) {
+            System.out.println("Не удалось прочитать историю");
+        }
+    }
+
+    public void addHistory(String input) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/history.txt", true))) {
+            writer.append(input).append("\n").flush();
+        } catch (IOException exception) {
+            System.out.println("Не удалось сохранить ввод в историю");
+        }
     }
 }

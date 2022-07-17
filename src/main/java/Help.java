@@ -15,6 +15,7 @@ public class Help {
             case Commands.EXIT -> System.out.println("Просто введи exit. Без аргументов.");
             case Commands.LOCAL_DIRECTORY -> System.out.println("Просто введи pwd. Без аргументов.");
             case Commands.ECHO -> System.out.println("echo <Строка>");
+            case Commands.HISTORY -> System.out.println("history <Количество строк>. Или без аргументов.");
             default -> System.out.println("Эта команда отсустсвует.");
         }
 

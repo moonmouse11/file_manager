@@ -13,6 +13,7 @@ public interface Commands {
     String REMOVE_DIRECTORY = "rmdir";
     String LOCAL_DIRECTORY = "pwd";
     String ECHO = "echo";
+    String HISTORY = "history";
 
 
 }

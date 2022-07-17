@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -12,6 +13,7 @@ public class Main {
         String input = scanner.nextLine();
 
         while (!input.equals(Commands.EXIT)) {
+            fileManager.addHistory(input);
             try {
                 String[] tokens = input.split(" ");
                 String command = tokens[0];
@@ -40,7 +42,7 @@ public class Main {
                         fileManager.makeDirectory(directoryName);
                     }
                     case Commands.HELP -> {
-                        if(tokens.length == 1) {
+                        if (tokens.length == 1) {
                             fileManager.help();
                         } else {
                             String commandForHelp = tokens[1];
@@ -58,9 +60,28 @@ public class Main {
                     case Commands.LOCAL_DIRECTORY -> {
                         fileManager.showLocalDirectory();
                     }
+                    case Commands.ECHO -> {
+                        if (tokens.length == 1) {
+                            System.out.println("Нечео возвращать");
+                        } else {
+                            fileManager.echo(tokens);
+                        }
+                    }
+                    case Commands.HISTORY -> {
+                        if (tokens.length == 1) {
+                            fileManager.showHistory(0);
+                        } else if (tokens.length == 2){
+                            try {
+                                int number = Integer.parseInt(tokens[1]);
+                                fileManager.showHistory(number);
+                            } catch (InputMismatchException exception) {
+                                System.out.println("Некорректный ввод. Попробуй help history");
+                            }
+                        }
+                    }
                     default -> System.out.println("Некорректная команда. Попробуй help");
                 }
-            }catch (ArrayIndexOutOfBoundsException exception) {
+            } catch (ArrayIndexOutOfBoundsException exception) {
                 System.out.println("Некорректный ввод программы.");
                 System.out.println("Попробуй help <Команда>");
             }
