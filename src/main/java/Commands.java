@@ -8,5 +8,11 @@ public interface Commands {
     String CHANGE_DIRECTORY = "cd";
     String EXIT = "exit";
     String MAKE_DIRECTORY = "mkdir";
+    String HELP = "help";
+    String REMOVE_FILE = "rm";
+    String REMOVE_DIRECTORY = "rmdir";
+    String LOCAL_DIRECTORY = "pwd";
+    String ECHO = "echo";
+
 
 }

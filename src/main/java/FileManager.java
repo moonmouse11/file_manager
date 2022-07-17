@@ -1,6 +1,7 @@
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.util.Objects;
 
 public class FileManager {
 
@@ -12,15 +13,32 @@ public class FileManager {
         this.root = currentFolder;
     }
 
+    public void help() {
+        String help = """
+                 ls - список файлов в директории
+                 ll - список файлов в директории с отображением занимаемой памяти
+                 pwd - просмотреть текущую директорию
+                 cp - копировать файл
+                 touch - создать файл
+                 cat - просмотреть содежимое файла
+                 cd - сменить директорию
+                 mkdir - создать директорию
+                 help - показывает это сообщение
+                 rm - удалить файл
+                 exit - выйти из программы""";
+        System.out.println(help);
+    }
+
     public void listOfFiles(boolean withSize) {
         File currentFolderAsFile = new File(currentFolder);
         File[] files = currentFolderAsFile.listFiles();
+        System.out.println(currentFolder);
         for (File file : files) {
             if (file.isDirectory()) {
                 if (withSize) {
-                    System.out.println(file.getName() + "\\  " + FileUtils.sizeOf(file));
+                    System.out.println(file.getName() + " -D  " + FileUtils.sizeOf(file));
                 } else {
-                    System.out.println(file.getName() + "\\");
+                    System.out.println(file.getName() + " -D");
                 }
             } else {
                 if (withSize) {
@@ -30,7 +48,6 @@ public class FileManager {
                 }
             }
         }
-        System.out.println();
     }
 
 
@@ -38,6 +55,7 @@ public class FileManager {
         File source = new File(currentFolder + File.separator + sourceFileName);
         File destination = new File(currentFolder + File.separator + destinationFileName);
         try {
+            if(!source.exists()) throw new IOException();
             FileUtils.copyFile(source, destination);
         } catch (IOException e) {
             System.out.println("Файл не скопирован");
@@ -75,6 +93,7 @@ public class FileManager {
     public void fileContent(String fileName) {
         File file = new File(currentFolder + File.separator + fileName);
         try {
+            if(!file.exists()) throw new IOException();
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line = reader.readLine();
             while (line != null) {
@@ -84,5 +103,44 @@ public class FileManager {
         } catch (IOException e) {
             System.out.println("Невозможно прочитать файл");
         }
+    }
+
+    public void makeDirectory(String directoryName) {
+        File file = new File(currentFolder + File.separator + directoryName);
+        file.mkdir();
+    }
+
+    public void removeFile(String removeFile) {
+        File file = new File(currentFolder + File.separator + removeFile);
+        if(file.exists()){
+            file.delete();
+        }else{
+            System.out.println("Нет такого файла");
+        }
+    }
+
+    public void removeDirectory(String removeDirectory) {
+        File file = new File(currentFolder + File.separator + removeDirectory);
+        if(file.exists() && file.isDirectory()) {
+            recursiveDelete(file);
+        } else {
+            removeFile(removeDirectory);
+        }
+    }
+
+
+    public static void recursiveDelete(File file) {
+        if (file.isDirectory()) {
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                recursiveDelete(f);
+            }
+            file.delete();
+        } else {
+            file.delete();
+        }
+    }
+
+    public void showLocalDirectory() {
+        System.out.println("Вы сейчас находитесь в " + currentFolder);
     }
 }
